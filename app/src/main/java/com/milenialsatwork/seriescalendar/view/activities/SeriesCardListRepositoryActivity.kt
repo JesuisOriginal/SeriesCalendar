@@ -1,18 +1,21 @@
 package com.milenialsatwork.seriescalendar.view.activities
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ListView
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.snackbar.Snackbar
 import com.milenialsatwork.seriescalendar.R
 import com.milenialsatwork.seriescalendar.databinding.SeriesCardsListRepositoryActivityBinding
 import com.milenialsatwork.seriescalendar.model.data.Series
 import com.milenialsatwork.seriescalendar.model.repository.SeriesCardRepository
 import com.milenialsatwork.seriescalendar.model.utils.SCLog
+import com.milenialsatwork.seriescalendar.view.adapter.SeriesListAdapter
 import com.milenialsatwork.seriescalendar.view.ui.dialog.InputDialog
 
 
@@ -28,6 +31,7 @@ class SeriesCardListRepositoryActivity : Activity(){
     // Todo: to ViewModel Start
     private lateinit var cardsDAO: SeriesCardRepository
     private lateinit var cardListView: ListView
+
     // Todo: to ViewModel end
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,15 +48,21 @@ class SeriesCardListRepositoryActivity : Activity(){
 
         cardsDAO = SeriesCardRepository()
         cardListView = findViewById(R.id.card_list_view)
-
+//        cardListView.adapter = SeriesListAdapter(this, SeriesCardRepository())
+        cardListView.adapter = SeriesListAdapter(this,
+            SeriesCardRepository().also { it.populateWithProps(10) })
         binding.addFab.setOnClickListener { view ->
             SCLog.d(TAG, "addFab.setOnClickListener: clicked")
             Snackbar.make(view, "Adding new series", Snackbar.LENGTH_LONG).show()
-            addNewTrackedSeries(view)
+            openCreateActivity(view)
         }
 //        binding.addFab.setImageResource(R.mipmap.fab_icon_round)
     }
 
+    private fun openCreateActivity(view: View) {
+        val intent = Intent(this, CreateSeriesActivity::class.java)
+        startActivityForResult(intent, 0)
+    }
 
     // TODO: Move methods below to ViewModel of CardActivity
     private fun addNewTrackedSeries(view: View) {

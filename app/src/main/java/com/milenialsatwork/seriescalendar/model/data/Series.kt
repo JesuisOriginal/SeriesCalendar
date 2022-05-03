@@ -11,6 +11,8 @@ class Series () {
         this.name = seriesName
     }
 
+    constructor(name: String) : this()
+
     var name: String = ""
         get() = field
         set(newName: String) { field = newName }

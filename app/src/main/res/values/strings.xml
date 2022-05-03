@@ -21,4 +21,6 @@
     <string name="empty_text_input_field">_____________________</string>
     <string name="done">Done</string>
     <string name="cancel">Cancel</string>
+    <string name="lastest_chapter_field">Last Chapter:</string>
+    <string name="CreateSeriesActivity">Create Series Screen</string>
 </resources>

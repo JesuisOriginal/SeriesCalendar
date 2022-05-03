@@ -17,6 +17,16 @@ class SeriesCardRepository {
         Collections.swap(seriesCardsList, starterPosition, finalPosition)
     }
 
+    fun getSerieByIndex(index: Int): Series {
+        return seriesCardsList[index]
+    }
+
+    fun populateWithProps(size: Int) {
+        for (i in 1..size) {
+            add(Series())
+        }
+    }
+
     val size: Int
         get() = seriesCardsList.size
 }
