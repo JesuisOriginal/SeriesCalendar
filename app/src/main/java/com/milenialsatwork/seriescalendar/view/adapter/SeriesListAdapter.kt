@@ -109,6 +109,8 @@ class SeriesListAdapter (
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val layoutInflater = LayoutInflater.from(context)
         val view = layoutInflater.inflate(R.layout.base_card, this, false)
+
+        return view
     }
 
     override fun getViewTypeCount(): Int {
