@@ -4,7 +4,7 @@ import com.milenialsatwork.seriescalendar.model.data.Series
 import java.util.*
 
 class SeriesCardRepository {
-    private val seriesCardsList: MutableList<Series> = mutableListOf()
+    val seriesCardsList: MutableList<Series> = mutableListOf()
         get() = field
 
     fun add(card: Series) = seriesCardsList.add(card)

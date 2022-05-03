@@ -17,7 +17,10 @@ import com.milenialsatwork.seriescalendar.model.repository.SeriesCardRepository
 import com.milenialsatwork.seriescalendar.view.holder.CardViewHolder
 
 
-class SeriesListAdapter (private val click: (Series) -> Unit) :
+class SeriesListAdapter (
+    private val context: Context,
+    private val seriesRepository: SeriesCardRepository
+        ) :
     ListAdapter<Series, SeriesListAdapter.SeriesViewHolder>(SeriesListAdapter),
     android.widget.ListAdapter {
 
@@ -39,7 +42,7 @@ class SeriesListAdapter (private val click: (Series) -> Unit) :
     }
 
     override fun getItem(index: Int): Series {
-        return seriesListRep.getSerieByIndex(index)
+        return seriesRepository.getSerieByIndex(index)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SeriesViewHolder {
@@ -47,7 +50,8 @@ class SeriesListAdapter (private val click: (Series) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: SeriesViewHolder, position: Int) {
-        holder.bind(getItem(position), click)
+        holder.bind(getItem(position))
+//        holder.bind(getItem(position), click)
     }
 
     class SeriesViewHolder(
@@ -70,21 +74,31 @@ class SeriesListAdapter (private val click: (Series) -> Unit) :
             }
         }
 
+        fun bind(data: Series) {
+            with(view) {
+//                positiveButton.setOnClickListener { click.invoke(data) }
+                seriesName.text = data.name
+                lastChapter.text = data.lastChapter
+                uploadedIn.text = data.lastUpdate
+                seriesImage.setImageResource(data.image)
+            }
+        }
+
         companion object {
             fun from(parent: ViewGroup): SeriesViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val view = layoutInflater.inflate(com.milenialsatwork.seriescalendar.R.layout.base_card, parent, false)
+                val view = layoutInflater.inflate(R.layout.base_card, parent, false)
 
                 return SeriesViewHolder(view)
             }
         }
     }
 
-    override fun registerDataSetObserver(p0: DataSetObserver?) {
+    override fun registerDataSetObserver(observer: DataSetObserver?) {
         TODO("Not yet implemented")
     }
 
-    override fun unregisterDataSetObserver(p0: DataSetObserver?) {
+    override fun unregisterDataSetObserver(observer: DataSetObserver?) {
         TODO("Not yet implemented")
     }
 
@@ -92,23 +106,24 @@ class SeriesListAdapter (private val click: (Series) -> Unit) :
         TODO("Not yet implemented")
     }
 
-    override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
-        TODO("Not yet implemented")
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        val layoutInflater = LayoutInflater.from(context)
+        val view = layoutInflater.inflate(R.layout.base_card, this, false)
     }
 
     override fun getViewTypeCount(): Int {
-        TODO("Not yet implemented")
+        return seriesRepository.size
     }
 
     override fun isEmpty(): Boolean {
-        TODO("Not yet implemented")
+        return seriesRepository.size == 0
     }
 
     override fun areAllItemsEnabled(): Boolean {
-        TODO("Not yet implemented")
+        return isEmpty
     }
 
-    override fun isEnabled(p0: Int): Boolean {
-        TODO("Not yet implemented")
+    override fun isEnabled(position: Int): Boolean {
+        return true
     }
 }

@@ -30,6 +30,6 @@ class Series () {
         set(newImageResourceId: Int) { field = newImageResourceId }
 
     override fun toString(): String {
-        return "Series Name: $name with $lastChapter Last Chapter"
+        return "Series Name: $name; Last Chapter Released $lastChapter"
     }
 }
