@@ -14,7 +14,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.milenialsatwork.seriescalendar.R
 import com.milenialsatwork.seriescalendar.databinding.CardActivityBinding
 import com.milenialsatwork.seriescalendar.model.data.Series
-import com.milenialsatwork.seriescalendar.view.adapter.CardAdapter
+import com.milenialsatwork.seriescalendar.model.repository.SeriesCardRepository
+import com.milenialsatwork.seriescalendar.view.adapter.SeriesAdapter
 import com.milenialsatwork.seriescalendar.viewmodel.card.CardViewModel
 import com.milenialsatwork.seriescalendar.viewmodel.factory.CardViewModelFactory
 import kotlin.random.Random
@@ -66,16 +67,18 @@ class CardActivity (
 //            val currentSeriesCard = cardDetailViewModel
 //        }
 
-        val list: List<Series> = listOf(
-            Series(
-                "New Series",
-                "Yesterday",
-                "28",
-                R.mipmap.vegeto
-            )
-        )
 
-        val cardAdapter = CardAdapter(list)
+        val seriesRepo = SeriesCardRepository().also {
+            it.add(
+                Series(
+                    "New Series",
+                    "Yesterday",
+                    "28",
+                    R.mipmap.vegeto
+                )
+            )
+        }
+        val cardAdapter = SeriesAdapter(seriesRepo)
 
         val recyclerView: RecyclerView = findViewById(R.id.card_list_view)
         recyclerView.adapter = cardAdapter

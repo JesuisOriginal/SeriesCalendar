@@ -56,6 +56,7 @@ dependencies {
     // UI Tests
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.1")
 
+    implementation("androidx.recyclerview:recyclerview:1.3.0-alpha02")
 
     //tests
     testImplementation("junit:junit:4.13.2")

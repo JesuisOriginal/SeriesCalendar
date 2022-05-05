@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.milenialsatwork.seriescalendar.model.data.DataSource
+import com.milenialsatwork.seriescalendar.model.repository.SeriesCardRepository
 import com.milenialsatwork.seriescalendar.viewmodel.card.CardViewModel
 import java.lang.IllegalArgumentException
 
@@ -15,9 +16,15 @@ class CardViewModelFactory (
             @Suppress("UNCHECKED_CAST")
             return CardViewModel(
                 context,
-                dataSource = DataSource.getDataSource(context.resources)
+                dataSource = DataSource.getDataSource(SeriesCardRepository())
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
+    }
+    fun createFromContext(): CardViewModel {
+        return CardViewModel(
+            context,
+            dataSource = DataSource.getDataSource(SeriesCardRepository())
+        ) as CardViewModel
     }
 }

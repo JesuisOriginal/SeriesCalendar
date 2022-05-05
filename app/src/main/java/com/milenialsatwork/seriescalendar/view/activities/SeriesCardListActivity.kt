@@ -1,39 +1,49 @@
 package com.milenialsatwork.seriescalendar.view.activities
 
 import android.app.Activity
+import android.content.Intent
+import android.database.DataSetObserver
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.ListAdapter
 import android.widget.ListView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.milenialsatwork.seriescalendar.R
 import com.milenialsatwork.seriescalendar.databinding.SeriesCardsListRepositoryActivityBinding
 import com.milenialsatwork.seriescalendar.model.data.Series
 import com.milenialsatwork.seriescalendar.model.repository.SeriesCardRepository
 import com.milenialsatwork.seriescalendar.model.utils.SCLog
-import com.milenialsatwork.seriescalendar.view.adapter.CardAdapter
 import com.milenialsatwork.seriescalendar.view.adapter.SeriesListAdapter
 import com.milenialsatwork.seriescalendar.view.ui.dialog.InputDialog
-import kotlinx.coroutines.delay
+import com.milenialsatwork.seriescalendar.viewmodel.factory.CardViewModelFactory
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 
-class SeriesCardListRepositoryActivity : Activity(){
+class SeriesCardListActivity : Activity(), LifecycleOwner {
 
     companion object {
         private var TAG: String = "SeriesCardListRepositoryActivity"
+        private val newSeriesDialogRequestCode = 1
     }
 
 //    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: SeriesCardsListRepositoryActivityBinding
+    private lateinit var livedataObserver: SeriesObserver
+    private lateinit var lifecycleRegistry: LifecycleRegistry
 
     // Todo: to ViewModel Start
     private lateinit var seriesRepository: SeriesCardRepository
-    private lateinit var cardListView: ListView
+    private lateinit var cardListRecyclerView: RecyclerView
+    private val cardViewModel by lazy {
+        CardViewModelFactory(this).createFromContext()
+    }
     // Todo: to ViewModel end
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,62 +58,48 @@ class SeriesCardListRepositoryActivity : Activity(){
 //        appBarConfiguration = AppBarConfiguration(navController.graph)
 //        setupActionBarWithNavController(navController, appBarConfiguration)
 
-        seriesRepository = SeriesCardRepository()
-        cardListView = findViewById(R.id.card_list_view)
-        cardListView.adapter = SeriesListAdapter(this,
-            SeriesCardRepository().also { it.populateWithProps(10) })
+        cardListRecyclerView = findViewById(R.id.card_list_view)
+        lifecycleRegistry = LifecycleRegistry(this)
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+
+        seriesRepository = cardViewModel.getDataSource().getCardsRepository()
+        val adapter = SeriesListAdapter(this, seriesRepository)
+
+        cardListRecyclerView.adapter = adapter
+        cardListRecyclerView.layoutManager = LinearLayoutManager(this)
+        livedataObserver = SeriesObserver(cardListRecyclerView)
 
         binding.addFab.setOnClickListener { view ->
             SCLog.d(TAG, "addFab.setOnClickListener: clicked")
             Snackbar.make(view, "Adding new series", Snackbar.LENGTH_LONG).show()
-            addNewTrackedSeries(view)
+            cardViewModel.addNewTrackedSeries(view, this) { updateList() }
         }
+
+        cardViewModel.cardsLiveData.observe(this, {
+            it?.let {
+                adapter.submitList(it)
+            }
+        })
 //        binding.addFab.setImageResource(R.mipmap.fab_icon_round)
     }
 
-
-    // TODO: Move methods below to ViewModel of CardActivity
-    private fun addNewTrackedSeries(view: View) {
-        SCLog.d(TAG, "addNewTrackedSeries: creating Series")
-        var series: Series = Series(
-            "None",
-            "28",
-            "yesterday",
-            getImage()
-        )
-        SCLog.d(TAG, "addNewTrackedSeries: creating input dialog")
-        var inputDialog: InputDialog = InputDialog(this)
-        inputDialog
-            .setCallbackFunction {
-                doSetSeriesName(series, it.toString())
-                inputDialog.dismiss()
-            }
-            .show()
-
-
-
-//        getLastUpdated()
-//        getLastChapter()
-//        getImage()
-
-        // Todo: Notify activity that list changed <> Reload activity/list
+    override fun onStart() {
+        super.onStart()
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
     }
 
-    private fun addSeries(series: Series) {
-        SCLog.d(TAG, "addNewTrackedSeries: Adding $series")
-        seriesRepository.add(series)
-        printAllSeries()
-        updateList()
+    override fun onDestroy() {
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        super.onDestroy()
     }
 
-    private fun doSetSeriesName(seriesCard: Series, name:String) = runBlocking {
+
+
+    private fun doUpdateList() = runBlocking {
         launch {
-            delay(500L)
-            SCLog.d(TAG, "doGetSeriesName: got name ${seriesCard.name}")
-            delay(300L)
-            addSeries(seriesCard)
+            SCLog.d(TAG, "doUpdateList: Call Update List")
+            updateList()
         }
-        seriesCard.name = name
     }
 
     private fun printAllSeries() {
@@ -112,24 +108,11 @@ class SeriesCardListRepositoryActivity : Activity(){
         }
     }
 
-    fun callbackFunction(value: Any): Any {
-        return value
-    }
-    private fun getLastUpdated(): String {
-        return "Yesterday"
-    }
 
-    private fun getLastChapter(): String {
-        return "28"
-    }
-
-    private fun getImage(): Int {
-        // TODO: Make it grab an image from camera or gallery
-        return R.mipmap.pot
-    }
 
     private fun updateList() {
-        cardListView.refreshDrawableState()
+        SCLog.d(TAG, "updateList")
+        cardListRecyclerView.refreshDrawableState()
     }
 
     private fun onNewTrackedSeriesAdded(view: View) {
@@ -159,5 +142,22 @@ class SeriesCardListRepositoryActivity : Activity(){
 //        return navController.navigateUp(appBarConfiguration)
 //                || super.onSupportNavigateUp()
 //    }
-}
 
+    private class SeriesObserver(private var listView: RecyclerView): DataSetObserver() {
+        override fun onChanged() {
+            super.onChanged()
+            SCLog.d(TAG, "SeriesObserver.onChanged: updating view")
+            listView.refreshDrawableState()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+
+    }
+
+    override fun getLifecycle(): Lifecycle {
+        return lifecycleRegistry
+    }
+}

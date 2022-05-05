@@ -37,26 +37,27 @@ class InputDialog(
                 dismiss()
             }
             R.id.name_input_field -> {
-                textView = findViewById(R.id.name_input_field)
+                SCLog.d(TAG, "Editing Name")
                 textView.text.clear()
             }
             else -> {
-                SCLog.w(TAG, "onClick: Unknown view.id")
+                SCLog.d(TAG, "onClick: Unknown view.id")
             }
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        SCLog.d(TAG, "onCreate: creating dialog")
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.input_dialog)
-        textView = findViewById<EditText>(R.id.name_input_field)
+        textView = findViewById(R.id.name_input_field)
+        textView.text.clear()
+        textView.setHint(R.string.series_name_title)
         positive = findViewById(R.id.positive)
         negative = findViewById(R.id.negative)
 
         positive.setOnClickListener(this)
         negative.setOnClickListener(this)
-
     }
 }

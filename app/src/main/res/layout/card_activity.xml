@@ -24,7 +24,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/card_list_view"
+        android:id="@+id/card_list_recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="24dp"

@@ -3,9 +3,10 @@ package com.milenialsatwork.seriescalendar.model.data
 import android.content.res.Resources
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.milenialsatwork.seriescalendar.model.repository.SeriesCardRepository
 
-class DataSource(resourses: Resources) {
-    private val initialCardList: List<Series> = mutableListOf()
+class DataSource(private val resourses: SeriesCardRepository) {
+    private val initialCardList = resourses.seriesCardsList
     private val cardsLivedata = MutableLiveData(initialCardList)
         get() = field
 
@@ -16,7 +17,7 @@ class DataSource(resourses: Resources) {
     fun addCard(card: Series) {
         val currentList = cardsLivedata.value
         if (currentList == null) {
-            cardsLivedata.postValue(listOf(card))
+            cardsLivedata.postValue(mutableListOf(card))
         } else {
             val updatedList = currentList.toMutableList()
             updatedList.add(0, card);
@@ -36,14 +37,16 @@ class DataSource(resourses: Resources) {
         }
     }
 
-    fun getCardsList(): LiveData<List<Series>> {
+    fun getCardsList(): LiveData<MutableList<Series>> {
         return cardsLivedata
     }
+
+    fun getCardsRepository(): SeriesCardRepository = resourses
 
     companion object {
         private var INSTANCE: DataSource? = null
 
-        fun getDataSource(resources: Resources): DataSource {
+        fun getDataSource(resources: SeriesCardRepository): DataSource {
             return synchronized(DataSource::class) {
                 val newInstance = INSTANCE ?: DataSource(resources)
                 INSTANCE = newInstance
