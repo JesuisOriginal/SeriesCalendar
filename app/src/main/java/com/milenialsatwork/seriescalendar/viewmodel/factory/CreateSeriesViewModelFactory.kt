@@ -1,11 +1,8 @@
 package com.milenialsatwork.seriescalendar.viewmodel.factory
 
 import android.content.Context
-import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.milenialsatwork.seriescalendar.model.data.DataSource
-import com.milenialsatwork.seriescalendar.viewmodel.card.CardViewModel
 import com.milenialsatwork.seriescalendar.viewmodel.card.CreateSeriesViewModel
 import java.lang.IllegalArgumentException
 

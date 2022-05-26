@@ -14,3 +14,4 @@
 .cxx
 local.properties
 /.idea/runConfigurations.xml
+/app/schemas/com.milenialsatwork.seriescalendar.model.data.Database/*.json

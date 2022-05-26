@@ -1,8 +1,9 @@
 package com.milenialsatwork.seriescalendar.model.data
 
-import android.content.res.Resources
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import com.milenialsatwork.seriescalendar.model.repository.SeriesCardRepository
 
 class DataSource(private val resourses: SeriesCardRepository) {
@@ -14,15 +15,19 @@ class DataSource(private val resourses: SeriesCardRepository) {
     /**
      * Adds Card to live data
      */
+//    fun addCard(card: Series) {
+//        val currentList = cardsLivedata.value
+//        if (currentList == null) {
+//            cardsLivedata.postValue(mutableListOf(card))
+//        } else {
+//            val updatedList = currentList.toMutableList()
+//            updatedList.add(0, card);
+//            cardsLivedata.postValue(updatedList)
+//        }
+//    }
+
     fun addCard(card: Series) {
-        val currentList = cardsLivedata.value
-        if (currentList == null) {
-            cardsLivedata.postValue(mutableListOf(card))
-        } else {
-            val updatedList = currentList.toMutableList()
-            updatedList.add(0, card);
-            cardsLivedata.postValue(updatedList)
-        }
+        resourses.add(card)
     }
 
     /**

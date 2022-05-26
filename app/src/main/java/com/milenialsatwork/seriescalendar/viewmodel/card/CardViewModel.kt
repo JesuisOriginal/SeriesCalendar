@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.milenialsatwork.seriescalendar.R
 import com.milenialsatwork.seriescalendar.model.data.Series
 import com.milenialsatwork.seriescalendar.model.data.DataSource
@@ -25,9 +26,9 @@ class CardViewModel(context: Context, private val dataSource: DataSource) : View
     private var lastChapter: String = "LastCH Placeholder"
     private var lastUpdatedIn: String = "Updated Placeholder"
 
-    fun addNewSeries(seriesName: String, lastChapter: String, lastUpdated: String) {
-        if (seriesName == null) {
-            return
+    fun addNewSeries(seriesName: String, lastChapter: String, lastUpdated: String) = viewModelScope.launch {
+        if (seriesName == "") {
+            return@launch
         }
 
         val newSeries = Series(
@@ -42,7 +43,7 @@ class CardViewModel(context: Context, private val dataSource: DataSource) : View
 
     fun addNewSeries() = addNewSeries(seriesName, lastChapter, lastUpdatedIn)
 
-    fun addNewSeries(series: Series) {
+    fun addNewSeries(series: Series) = viewModelScope.launch{
         SCLog.d(TAG, "addNewSeries: adding $series")
         dataSource.addCard(series)
     }
@@ -62,11 +63,12 @@ class CardViewModel(context: Context, private val dataSource: DataSource) : View
                 doSetSeriesName(series, it.toString(), onCardCreatedCallback)
                 inputDialog.dismiss()
             }
+            .setTitle("Series Name:")
             .show()
 
     }
 
-    private fun addSeriesToDataSource(series: Series) {
+    private fun addSeriesToDataSource(series: Series) = viewModelScope.launch {
         SCLog.d(TAG, "addNewTrackedSeries: Adding $series")
         dataSource.getCardsRepository().add(series)
     }
@@ -75,7 +77,6 @@ class CardViewModel(context: Context, private val dataSource: DataSource) : View
         launch {
             SCLog.d(TAG, "doGetSeriesName: got name ${seriesCard.name}")
             addSeriesToDataSource(seriesCard)
-//            cardViewModel.addNewSeries(seriesCard)
             doUpdateList()
         }
         seriesCard.name = name

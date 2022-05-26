@@ -3,6 +3,7 @@ package com.milenialsatwork.seriescalendar.view.activities
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.ListView
 import androidx.activity.viewModels
 import com.google.android.material.snackbar.Snackbar
@@ -15,6 +16,8 @@ import com.milenialsatwork.seriescalendar.viewmodel.card.CardViewModel
 import com.milenialsatwork.seriescalendar.viewmodel.card.CreateSeriesViewModel
 import com.milenialsatwork.seriescalendar.viewmodel.factory.CardViewModelFactory
 import com.milenialsatwork.seriescalendar.viewmodel.factory.CreateSeriesViewModelFactory
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class CreateSeriesActivity(
 

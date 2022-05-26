@@ -19,12 +19,19 @@ class InputDialog(
     }
 
     private lateinit var textView: EditText
+    private lateinit var titleTextView: TextView
     private lateinit var positive: MaterialButton
     private lateinit var negative: MaterialButton
     private lateinit var callbackFunction: (value: Any) -> Unit
+    private var title = ""
 
     fun setCallbackFunction(callbackFunction: (value: Any) -> Unit): InputDialog {
         this.callbackFunction = callbackFunction
+        return this
+    }
+
+    fun setTitle(title: String): InputDialog {
+        this.title = title
         return this
     }
 
@@ -52,6 +59,8 @@ class InputDialog(
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.input_dialog)
         textView = findViewById(R.id.name_input_field)
+        titleTextView = findViewById(R.id.input_name_title)
+        titleTextView.text = title
         textView.text.clear()
         textView.setHint(R.string.series_name_title)
         positive = findViewById(R.id.positive)

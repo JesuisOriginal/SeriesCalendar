@@ -10,6 +10,7 @@ import com.google.android.material.textview.MaterialTextView
 import com.milenialsatwork.seriescalendar.R
 import com.milenialsatwork.seriescalendar.model.data.Series
 import com.milenialsatwork.seriescalendar.model.repository.SeriesCardRepository
+import kotlinx.coroutines.runBlocking
 
 class SeriesAdapter (
     private val seriesRepo: SeriesCardRepository

@@ -102,14 +102,6 @@ class SeriesCardListActivity : Activity(), LifecycleOwner {
         }
     }
 
-    private fun printAllSeries() {
-        for (series: Series in seriesRepository.seriesCardsList) {
-            SCLog.d(TAG, "printAllSeries: $series")
-        }
-    }
-
-
-
     private fun updateList() {
         SCLog.d(TAG, "updateList")
         cardListRecyclerView.refreshDrawableState()
