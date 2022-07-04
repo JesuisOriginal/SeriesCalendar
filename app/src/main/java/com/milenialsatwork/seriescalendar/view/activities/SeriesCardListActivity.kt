@@ -11,6 +11,7 @@ import android.widget.ListView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -62,7 +63,10 @@ class SeriesCardListActivity : Activity(), LifecycleOwner {
         lifecycleRegistry = LifecycleRegistry(this)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
-        seriesRepository = cardViewModel.getDataSource().getCardsRepository()
+//        seriesRepository = cardViewModel.getDataSource().getCardsRepository()
+        lifecycleScope.launch {
+            loadDatabase()
+        }
         val adapter = SeriesListAdapter(this, seriesRepository)
 
         cardListRecyclerView.adapter = adapter
@@ -83,6 +87,12 @@ class SeriesCardListActivity : Activity(), LifecycleOwner {
 //        binding.addFab.setImageResource(R.mipmap.fab_icon_round)
     }
 
+    suspend fun loadDatabase() {
+        lifecycleScope.launch {
+            seriesRepository = cardViewModel.getDataSource().getCardsRepository()
+
+        }
+    }
     override fun onStart() {
         super.onStart()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
